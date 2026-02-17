@@ -64,7 +64,7 @@ export default function Home() {
           
           <div className="flex items-center gap-4">
            
-            <Link href="/login">
+            <Link href="/signup">
               <Button variant="default" size="sm" className="bg-primary hover:bg-primary/90 rounded-full px-6">
                 Enter System
               </Button>
@@ -86,7 +86,7 @@ export default function Home() {
                 Empowering healthcare providers with real-time vital tracking, intelligent registration, and comprehensive patient insights.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Link href="/login">
+                <Link href="/signup">
                   <Button size="lg" className="px-8 py-7 bg-primary hover:bg-primary/90 text-lg rounded-xl shadow-xl shadow-primary/20 group">
                     Enter Portal
                     <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />

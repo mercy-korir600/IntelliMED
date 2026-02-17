@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Header } from '@/components/Header'
 
+
 export default function RegisterPage() {
   const router = useRouter()
   const [formData, setFormData] = useState({
@@ -181,37 +182,39 @@ export default function RegisterPage() {
   </div>
 </div>
             {/* Patient No and Registration Date */}
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="patientNo" className="block text-sm font-medium text-foreground mb-2">
-                  Patient No *
-                </label>
-                <input
-                  type="text"
-                  id="patientNo"
-                  name="patientNo"
-                  value={formData.patientNo}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
-                  placeholder="P-00001"
-                />
-              </div>
-              <div>
-                <label htmlFor="registrationDate" className="block text-sm font-medium text-foreground mb-2">
-                  Registration Date
-                </label>
-                <input
-                  type="date"
-                  id="registrationDate"
-                  name="registrationDate"
-                  value={formData.registrationDate}
-                  disabled
-                  className="w-full px-3 py-2 border border-input rounded-md bg-muted text-muted-foreground cursor-not-allowed"
-                />
-              </div>
-            </div>
-
+     
+<div className="grid md:grid-cols-2 gap-4">
+  <div>
+    <label htmlFor="patientNo" className="block text-sm font-medium text-foreground mb-2">
+      Patient No 
+      <span className="ml-1 text-xs text-muted-foreground font-normal">(Auto-generated)</span>
+    </label>
+    <input
+      type="text"
+      id="patientNo"
+      name="patientNo"
+      value={formData.patientNo}
+      onChange={handleChange}
+      readOnly 
+      className="w-full px-3 py-2 border border-input rounded-md bg-muted/50 text-muted-foreground cursor-not-allowed italic"
+      placeholder="P-XXXXX"
+    />
+  </div>
+  
+  <div>
+    <label htmlFor="registrationDate" className="block text-sm font-medium text-foreground mb-2">
+      Registration Date
+    </label>
+    <input
+      type="date"
+      id="registrationDate"
+      name="registrationDate"
+      value={formData.registrationDate}
+      disabled
+      className="w-full px-3 py-2 border border-input rounded-md bg-muted text-muted-foreground cursor-not-allowed"
+    />
+  </div>
+</div>
             {/* Action Buttons */}
             <div className="flex gap-4 pt-6">
               <Button
@@ -238,6 +241,8 @@ export default function RegisterPage() {
               >
                 Submit
               </Button>
+
+
             </div>
           </form>
         </Card>

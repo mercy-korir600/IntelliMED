@@ -5,7 +5,21 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import Link from 'next/link'
-import { Eye, EyeOff, ShieldCheck } from 'lucide-react'
+import { Eye, EyeOff, ShieldCheck, Activity, AlertCircle } from 'lucide-react'
+
+interface LoginResponse {
+  message: string
+  success: boolean
+  code: number
+  data: {
+    id: number
+    name: string
+    email: string
+    updated_at: string
+    created_at: string
+    access_token: string
+  }
+}
 
 export default function LoginPage() {
   const router = useRouter()
@@ -20,17 +34,48 @@ export default function LoginPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
-    setError('')
+    if (error) setError('')
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault() 
+    e.preventDefault()
     setIsLoading(true)
-    
-    setTimeout(() => { 
-       router.push('/register')
-       setIsLoading(false)
-    }, 1500)
+    setError('')
+
+    try {
+      // Replace with your actual environment variable or API URL
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/user/signin`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const result: LoginResponse = await response.json()
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Authentication failed. Please check your credentials.')
+      }
+
+      // 1. Store the Access Token (Bearer Token)
+      localStorage.setItem('auth_token', result.data.access_token)
+      
+      // 2. Store minimal User info for UI display (optional)
+      localStorage.setItem('user_session', JSON.stringify({
+        name: result.data.name,
+        email: result.data.email
+      }))
+
+      // 3. Success Feedback & Redirect
+      router.push('/register')
+      
+    } catch (err: any) {
+      setError(err.message || 'Unable to connect to healthcare server.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -43,7 +88,7 @@ export default function LoginPage() {
           <div className="flex justify-center mb-6">
             <div className="relative group">
               <div className="absolute -inset-1 bg-gradient-to-r from-primary to-blue-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
-            
+          
             </div>
           </div>
           <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
@@ -56,9 +101,9 @@ export default function LoginPage() {
 
         {/* Login Card */}
         <Card className="p-10 border-slate-200/60 shadow-[0_20px_50px_rgba(0,0,0,0.05)] backdrop-blur-md bg-white/90 rounded-3xl">
-          <div className="mb-8">
+          <div className="mb-8 text-center">
             <h2 className="text-2xl font-bold text-slate-900">Welcome back</h2>
-            <p className="text-slate-500 text-sm mt-1">Please enter your credentials to access the portal.</p>
+            <p className="text-slate-500 text-sm mt-1">Please enter your clinical credentials.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -70,11 +115,12 @@ export default function LoginPage() {
                 type="email"
                 id="email"
                 name="email"
+                autoComplete="email"
                 value={formData.email}
                 onChange={handleChange}
                 required
-                placeholder="doctor@intellisoft.com"
-                className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white outline-none transition-all placeholder:text-slate-300"
+                placeholder="doctor@intellimed.com"
+                className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white outline-none transition-all placeholder:text-slate-300 text-slate-900"
               />
             </div>
 
@@ -92,11 +138,12 @@ export default function LoginPage() {
                   type={showPassword ? 'text' : 'password'}
                   id="password"
                   name="password"
+                  autoComplete="current-password"
                   value={formData.password}
                   onChange={handleChange}
                   required
                   placeholder="••••••••"
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white outline-none transition-all placeholder:text-slate-300"
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white outline-none transition-all placeholder:text-slate-300 text-slate-900"
                 />
                 <button
                   type="button"
@@ -109,9 +156,9 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <div className="p-3 bg-red-50 border border-red-100 rounded-xl text-xs font-medium text-red-600 flex items-center gap-2">
-                <div className="w-1 h-1 bg-red-600 rounded-full animate-pulse" />
-                {error}
+              <div className="p-4 bg-red-50 border border-red-100 rounded-xl text-xs font-medium text-red-600 flex items-start gap-3 animate-in fade-in zoom-in-95">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{error}</span>
               </div>
             )}
 
@@ -131,13 +178,24 @@ export default function LoginPage() {
                 </span>
               )}
             </Button>
+
+<div className="mt-8 pt-6 border-t border-slate-100 text-center">
+  <p className="text-sm text-slate-500 font-medium">
+    New to the platform?{' '}
+    <Link href="/signup" className="text-primary font-bold hover:underline transition-all">
+      Create an account
+    </Link>
+  </p>
+</div>
+
           </form>
         </Card>
 
         {/* Footer */}
         <div className="mt-10 flex flex-col items-center gap-4">
+         
           <p className="text-[10px] text-slate-400 font-medium">
-            © {new Date().getFullYear()} INTELLIMED SYSTEMS 
+            © {new Date().getFullYear()} INTELLIMED SYSTEMS • SECURE CLINICAL PORTAL
           </p>
         </div>
       </div>
