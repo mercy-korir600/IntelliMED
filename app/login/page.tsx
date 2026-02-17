@@ -91,7 +91,7 @@ export default function LoginPage() {
           
             </div>
           </div>
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight animate-pulse">
             Intelli<span className="text-primary">MED</span>
           </h1>
           <p className="text-sm text-slate-500 font-medium mt-1 uppercase tracking-[0.15em]">
@@ -174,7 +174,7 @@ export default function LoginPage() {
                 </span>
               ) : (
                 <span className="flex items-center gap-2">
-                  Enter Portal <ShieldCheck className="w-5 h-5" />
+                  Enter Portal
                 </span>
               )}
             </Button>
